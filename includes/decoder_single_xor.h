@@ -6,6 +6,7 @@
 
 struct decoded_string {
     std::string output;
+    std::string input;
     char key;
 };
 std::string decrypt_sxor(std::string input, char key);

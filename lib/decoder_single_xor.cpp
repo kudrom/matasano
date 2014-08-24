@@ -80,10 +80,10 @@ std::multimap<int, struct decoded_string> probe_keys(std::string input)
     std::string sdecoded;
     int score;
 
-    for(char key {'A'}; key <= 'Z'; key++){
+    for(char key {'!'}; key <= '~'; key++){
         sdecoded = decrypt_sxor(input, key);
         score = freqs_rank(sdecoded);
-        struct decoded_string decoded {sdecoded, key};
+        struct decoded_string decoded {sdecoded, input, key};
         ranking.insert(std::pair<int, struct decoded_string>(score, decoded));
     }
 
