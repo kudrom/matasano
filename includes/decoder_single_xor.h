@@ -6,7 +6,7 @@
 
 struct decoded_string {
     std::string output;
-    int score;
     char key;
 };
-struct decoded_string decrypt_single_character_xor(std::string input);
+std::string decrypt_sxor(std::string input, char key);
+std::multimap<int, struct decoded_string> probe_keys(std::string input);

@@ -3,11 +3,14 @@
 int main()
 {
     std::string input {"1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736"};
-    struct decoded_string output;
+    std::multimap<int, struct decoded_string> ranking;
 
-    output = decrypt_single_character_xor(input);
+    ranking = probe_keys(input);
 
-    std::cout << "key: " << output.key << "(" << output.score << ") " << output.output << std::endl;
+    std::multimap<int, struct decoded_string>::reverse_iterator rit;
+    for(rit = ranking.rbegin(); rit != ranking.rend(); rit++){
+        std::cout << rit->second.key << "(" << rit->first << ") " << rit->second.output << std::endl;
+    }
 
     return 0;
 }

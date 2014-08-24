@@ -15,7 +15,7 @@ std::multimap<B,A> flip_map(const std::map<A,B> &src)
     return dst;
 }
 
-int freqs_rank(std::list<char> phrase)
+int freqs_rank(std::string phrase)
 {
     std::map<char, int> freqs;
     std::multimap<int, char> sorted;
@@ -35,7 +35,7 @@ int freqs_rank(std::list<char> phrase)
 
     i = 0;
     for(std::multimap<int, char>::iterator it = sorted.begin(); it != sorted.end(); it++){
-        if (i == 6)
+        if (i >= 0)
             break;
         std::string character {it->second};
         if (lasts.find(character) != std::string::npos)
@@ -45,7 +45,7 @@ int freqs_rank(std::list<char> phrase)
 
     i = 0;
     for(std::multimap<int, char>::reverse_iterator it = sorted.rbegin(); it != sorted.rend(); it++){
-        if (i == 13)
+        if (i == firsts.size())
             break;
         std::string character {it->second};
         if (firsts.find(character) != std::string::npos)
@@ -56,34 +56,36 @@ int freqs_rank(std::list<char> phrase)
     return score;
 }
 
-struct decoded_string decrypt_single_character_xor(std::string input)
+std::string decrypt_sxor(std::string input, char key)
 {
-    struct decoded_string output;
-    std::list<char> maximums, actual;
-    int maximum, ranking;
-    char best_key;
+    std::list<char> buffer;
+    std::string output;
 
-    for(char key {'A'}; key <= 'Z'; key++){
-        actual.clear();
-        for(int i = 0; i < input.size(); i += 2){
-            std::string character = input.substr(i, 2);
-            int value = stoi(character, nullptr, 16);
-            int encoded = (value ^ key);
-            actual.push_back((char) toupper(encoded));
-        }
-        ranking = freqs_rank(actual);
-        if (ranking >= maximum){
-            maximums = actual;
-            best_key = key;
-            maximum = ranking;
-        }
+    for(int i = 0; i < input.size(); i += 2){
+        std::string character = input.substr(i, 2);
+        int value = stoi(character, nullptr, 16);
+        int encoded = (value ^ key);
+        buffer.push_back((char) toupper(encoded));
     }
-
-    output.key = best_key;
-    output.score = maximum;
-    for (char c : maximums){
-        output.output += c;
+    for (char c : buffer){
+        output += c;
     }
 
     return output;
+}
+
+std::multimap<int, struct decoded_string> probe_keys(std::string input)
+{
+    std::multimap<int, struct decoded_string> ranking;
+    std::string sdecoded;
+    int score;
+
+    for(char key {'A'}; key <= 'Z'; key++){
+        sdecoded = decrypt_sxor(input, key);
+        score = freqs_rank(sdecoded);
+        struct decoded_string decoded {sdecoded, key};
+        ranking.insert(std::pair<int, struct decoded_string>(score, decoded));
+    }
+
+    return ranking;
 }
