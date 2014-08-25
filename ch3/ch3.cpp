@@ -1,4 +1,4 @@
-#include "../includes/decoder_single_xor.h"
+#include "../includes/codec_xor.h"
 
 int main()
 {
