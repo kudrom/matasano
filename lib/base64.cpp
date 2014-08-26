@@ -1,8 +1,9 @@
 #include "../includes/base64.h"
+#include <cstdio>
 
-std::map<int, std::string> build_map()
+std::map<int, char> build_map()
 {
-    std::map<int, std::string> mapping;
+    std::map<int, char> mapping;
     char element = 'A';
 
     for (int i = 0; i < 64; i++){
@@ -23,9 +24,32 @@ std::map<int, std::string> build_map()
     return mapping;
 }
 
+std::map<char, int> build_reverse_map()
+{
+    std::map<char, int> mapping;
+    char element = 'A';
+
+    for (int i = 0; i < 64; i++){
+        mapping[element] = i;
+        if (element == 'Z'){
+            element = 'a';
+        }else if(element == 'z'){
+            element = '0';
+        }else if(element == '9'){
+            element = '+';
+        }else if(element == '+'){
+            element = '/';
+        }else{
+            element++;
+        }
+    }
+
+    return mapping;
+}
+
 std::string base64_encrypt_hex(std::string input)
 {
-    std::map<int, std::string> mapping;
+    std::map<int, char> mapping;
     int hex, digit1, digit2;
     std::queue<int> output;
     std::string retval;
@@ -56,10 +80,35 @@ std::string base64_encrypt_hex(std::string input)
 
 std::string base64_decrypt(std::string input)
 {
-    std::map<int, std::string> mapping;
-    int hex, digit1, digit2;
-    std::queue<int> output;
+    std::map<char, int> mapping;
+    char byte1, byte2, byte3;
+    int mapped;
+    int32_t binary_datum {0};
     std::string retval;
 
-    mapping = build_map();
+    mapping = build_reverse_map();
+
+    for(int i = 0; i < input.size(); i += 4){
+        std::string datum {input.substr(i, 4)};
+
+        binary_datum = 0;
+        for(char c : datum){
+            mapped = mapping[c];
+            binary_datum |= mapped;
+            binary_datum <<= 6;
+        }
+        binary_datum >>= 6;
+
+        byte1 = (binary_datum % 256);
+        binary_datum >>= 8;
+        byte2 = (binary_datum % 256);
+        binary_datum >>= 8;
+        byte3 = (binary_datum % 256);
+
+        retval += byte3;
+        retval += byte2;
+        retval += byte1;
+    }
+
+    return retval;
 }
