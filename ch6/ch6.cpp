@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     std::multimap<double, int>::iterator it {keysize_mapping.begin()};
     std::vector<int> better_keysizes;
     for (int i = 0; it != keysize_mapping.end(); it++, i++){
-        if (i == 4){
+        if (i == 2){
             break;
         }
         better_keysizes.push_back(it->second);
@@ -78,14 +78,28 @@ int main(int argc, char *argv[])
             std::multimap<int, struct decoded_string>::reverse_iterator rit;
             int limit = 0;
             for(rit = ranking.rbegin(); rit != ranking.rend(); rit++, limit++){
-                std::cout << rit->second.key;
-                if (limit == 4)
+                char key = rit->second.key;
+                std::string aux {key};
+                std::string plaintext = decrypt_xor(str, aux);
+                std::cout << key << " : " << plaintext << std::endl;
+                if (limit == 3)
                     break;
             }
             std::cout << std::endl;
         }
         std::cout << std::endl;
     }
+
+    /*
+    std::string hex_decoded;
+    for(char c : decoded){
+        char hex[2];
+        sprintf(hex, "%02X", c);
+        hex_decoded += hex;
+    }
+    std::string output {decrypt_xor(hex_decoded, "not")};
+    std::cout << output << std::endl;
+    */
 
     return 0;
 }
