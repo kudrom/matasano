@@ -1,7 +1,7 @@
 import base64
 from Crypto.Cipher import AES
 
-with open("7.txt") as f:
+with open("corto.aes") as f:
     b64_encoded = f.read();
 b64_decoded = base64.b64decode(b64_encoded)
 

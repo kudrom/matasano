@@ -22,14 +22,16 @@ int main(int argc, char *argv[])
     std::string decoded, line, output;
     std::ifstream input {filename};
 
-    decoded = filename;
-    /*
+    if (key.size() != 16){
+        std::cout << "The key must be 16 bytes long." << std::endl;
+        exit(-1);
+    }
+
     if (input.is_open()){
         while (std::getline(input, line)){
             decoded += base64_decrypt(line);
         }
     }
-    */
 
     byte buffer_key[16];
     int i = 0;
@@ -37,18 +39,12 @@ int main(int argc, char *argv[])
         buffer_key[i] = c;
         i++;
     }
-    /*
-    while (i < 16){
-        buffer_key[i] = 0;
-        i++;
-    }
-    */
 
-    ECB_Mode<AES>::Encryption enc;
-    enc.SetKey(buffer_key, 16);
+    ECB_Mode<AES>::Decryption dec;
+    dec.SetKey(buffer_key, 16);
 
     StringSource(decoded, true,
-            new StreamTransformationFilter(enc,
+            new StreamTransformationFilter(dec,
                 new StringSink(output)
             )
     );
