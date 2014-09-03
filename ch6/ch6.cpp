@@ -79,8 +79,6 @@ int main(int argc, char *argv[])
             int limit = 0;
             for(rit = ranking.rbegin(); rit != ranking.rend(); rit++, limit++){
                 char key = rit->second.key;
-                std::string aux {key};
-                std::string plaintext = decrypt_xor(str, aux);
                 std::cout << key << " ";
                 if (limit == 2)
                     break;
