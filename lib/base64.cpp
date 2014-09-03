@@ -47,6 +47,9 @@ std::map<char, int> build_reverse_map()
     return mapping;
 }
 
+/*
+ * Get a hex encoded string as an input and returns a base64 encoded string
+ */
 std::string base64_encrypt_hex(std::string input)
 {
     std::map<int, char> mapping;
@@ -78,6 +81,9 @@ std::string base64_encrypt_hex(std::string input)
     return retval;
 }
 
+/*
+ * Get a string as an input and returns a plain string
+ */
 std::string base64_decrypt(std::string input)
 {
     std::map<char, int> mapping;
