@@ -63,8 +63,10 @@ char dencrypt(int input, char key)
     return (char) encoded;
 }
 
+
 /*
  * Receives as input an hex encoded string and returns a decoded string
+ * Uses ECB mode
  */
 std::string decrypt_xor(std::string input, std::string key)
 {
@@ -85,6 +87,7 @@ std::string decrypt_xor(std::string input, std::string key)
 
 /*
  * Receives as input a decoded string and returns an hex encoded string
+ * Uses ECB mode
  */
 std::string encrypt_xor(std::string input, std::string key)
 {
@@ -105,7 +108,8 @@ std::string encrypt_xor(std::string input, std::string key)
 }
 
 /*
- * Receives as input an ifstream and returns the contents of the file encoded in hex
+ * Receives as input filename and returns the contents of the file encoded in a hex string
+ * Uses ECB mode
  */
 std::string encrypt_file_xor(std::string filename, std::string key)
 {
@@ -133,6 +137,7 @@ std::string encrypt_file_xor(std::string filename, std::string key)
     return output;
 }
 
+
 std::multimap<int, struct decoded_string> probe_keys(std::string input)
 {
     std::multimap<int, struct decoded_string> ranking;
@@ -148,4 +153,49 @@ std::multimap<int, struct decoded_string> probe_keys(std::string input)
     }
 
     return ranking;
+}
+
+/* 
+ * ##############################
+ * # THIS IS FOR THE SECOND SET #
+ * ##############################
+ */
+
+
+std::string xor_block(std::string a, std::string b)
+{
+    assert(a.size() == b.size());
+
+    std::string output;
+
+    for(int i = 0; i < a.size(); i++){
+        char aa = a[i];
+        char bb = b[i];
+        char c = (aa ^ bb);
+        output += c;
+    }
+
+    return output;
+}
+
+/*
+ * Receives as input a string and decodes it with a cbc mode of xor
+ */
+std::string decrypt_xor_cbc(std::string input, std::string key, std::string iv)
+{
+    int key_size {key.size()};
+    std::string old_ciphertext {iv};
+    std::string output;
+
+    for(int i = 0; i < input.size(); i++){
+        std::string ciphertext = input.substr(i, key_size);
+        std::string ciphertext_padded = pkcs7_pad(ciphertext, key_size);
+        std::string plaintext = xor_block(ciphertext_padded, key);
+        plaintext = xor_block(plaintext, old_ciphertext);
+        output += plaintext;
+
+        old_ciphertext = ciphertext_padded;
+    }
+
+    return output;
 }
