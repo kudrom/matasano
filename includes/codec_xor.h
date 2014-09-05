@@ -19,3 +19,4 @@ std::string encrypt_file_xor(std::string input, std::string key);
 std::multimap<int, struct decoded_string> probe_keys(std::string input);
 
 std::string decrypt_xor_cbc(std::string input, std::string key, std::string iv);
+std::string encrypt_xor_cbc(std::string input, std::string key, std::string iv);

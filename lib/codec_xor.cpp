@@ -175,6 +175,21 @@ std::string xor_block(std::string a, std::string b)
         output += c;
     }
 
+#ifdef DEBUG
+    for(char c : a){
+        printf("%02X", c);
+    }
+    printf(" ^ ");
+    for(char c : b){
+        printf("%02X", c);
+    }
+    printf(" = ");
+    for(char c : output){
+        printf("%02X", c);
+    }
+    printf("\n");
+#endif
+
     return output;
 }
 
@@ -187,7 +202,7 @@ std::string decrypt_xor_cbc(std::string input, std::string key, std::string iv)
     std::string old_ciphertext {iv};
     std::string output;
 
-    for(int i = 0; i < input.size(); i++){
+    for(int i = 0; i < input.size(); i += key_size){
         std::string ciphertext = input.substr(i, key_size);
         std::string ciphertext_padded = pkcs7_pad(ciphertext, key_size);
         std::string plaintext = xor_block(ciphertext_padded, key);
@@ -195,6 +210,28 @@ std::string decrypt_xor_cbc(std::string input, std::string key, std::string iv)
         output += plaintext;
 
         old_ciphertext = ciphertext_padded;
+    }
+
+    return output;
+}
+
+/*
+ * Receives as input a string and encodes it with a cbc mode of xor
+ */
+std::string encrypt_xor_cbc(std::string input, std::string key, std::string iv)
+{
+    int key_size {key.size()};
+    std::string old_ciphertext {iv};
+    std::string output;
+
+    for(int i = 0; i < input.size(); i += key_size){
+        std::string plaintext = input.substr(i, key_size);
+        std::string plaintext_padded = pkcs7_pad(plaintext, key_size);
+        std::string ciphertext_1 = xor_block(plaintext_padded, old_ciphertext);
+        std::string ciphertext_2 = xor_block(ciphertext_1, key);
+        output += ciphertext_2;
+
+        old_ciphertext = ciphertext_2;
     }
 
     return output;
