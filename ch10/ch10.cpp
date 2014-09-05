@@ -55,6 +55,7 @@ int main(int argc, char *argv[])
 #endif
 
 #ifndef DEBUG
+// decrypt the challenge file
 int main(int argc, char *argv[])
 {
     if (argc != 3){
@@ -79,7 +80,15 @@ int main(int argc, char *argv[])
         output = decrypt_xor_cbc(input, key, iv);
     }
 
-    cout << output << endl;
+    int i = 0;
+    for (unsigned char c : output){
+        if (i == 15){
+            i = 0;
+            printf("\n");
+        }
+        printf("%02X", c);
+        i++;
+    }
 
     return 0;
 }
