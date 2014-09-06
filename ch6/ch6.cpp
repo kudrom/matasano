@@ -1,4 +1,4 @@
-#include "../includes/hamming.h"
+#include "../includes/utils.h"
 #include "../includes/base64.h"
 #include "../includes/codec_xor.h"
 #include <cstdio>
@@ -12,8 +12,8 @@ int test_hamming_distance(int argc, char *argv[])
         std::cout << "Usage: ch6 <str1> <str2>" << std::endl;
         return -1;
     }
-    std::string str1 {argv[1]};
-    std::string str2 {argv[2]};
+    string str1 {argv[1]};
+    string str2 {argv[2]};
 
     std::cout << hamming_distance(str1, str2) << std::endl;
 
@@ -26,8 +26,8 @@ int main(int argc, char *argv[])
         std::cout << "Usage: ch6 <input_file>" << std::endl;
         return -1;
     }
-    std::string filename {argv[1]};
-    std::string decoded, line;
+    string filename {argv[1]};
+    string decoded, line;
     std::ifstream input {filename};
     int KEYSIZE {40};
     std::multimap<double, int> keysize_mapping;
@@ -39,8 +39,8 @@ int main(int argc, char *argv[])
     }
 
     for (int i = 2; i < KEYSIZE; i++){
-        std::string str1 {decoded.substr(0, i)};
-        std::string str2 {decoded.substr(i, i)};
+        string str1 {decoded.substr(0, i)};
+        string str2 {decoded.substr(i, i)};
         assert(str1.size() == str2.size());
 
         int distance {hamming_distance(str1, str2)};
@@ -58,10 +58,10 @@ int main(int argc, char *argv[])
 
     for(int keysize : better_keysizes){
         int blocks = ceil(decoded.size() / keysize);
-        std::vector<std::string> transposed;
+        std::vector<string> transposed;
         printf("keysize: %d\n", keysize);
         for(int i = 0; i < keysize; i++){
-            transposed.push_back(std::string {});
+            transposed.push_back(string {});
             for(int block = 0; block < blocks; block++){
                 int index = (block * keysize) + i;
                 if (index < decoded.size()){
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
                 }
             }
         }
-        for(std::string str : transposed){
+        for(string str : transposed){
             std::multimap<int, struct decoded_string> ranking = probe_keys(str);
             std::multimap<int, struct decoded_string>::reverse_iterator rit;
             int limit = 0;
