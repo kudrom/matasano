@@ -22,7 +22,8 @@ int main(int argc, char *argv[])
     int score;
     if (input.is_open()){
         while (getline(input, line)){
-            score = repeated_strings(line);
+            // The line is in hex coding, so 16*2 is the length of the substr
+            score = repeated_strings(line, 32);
             ranking.insert(pair<int, string>(score, line));
         }
     }

@@ -35,7 +35,7 @@ string pkcs7_pad(string input, int block_size)
     return output;
 }
 
-int repeated_strings(string ciphertext)
+int repeated_strings(string ciphertext, int length)
 {
     int score {0};
     vector<string> readed;
@@ -43,7 +43,7 @@ int repeated_strings(string ciphertext)
     int end {ciphertext.size()}, curr {0};
 
     while (curr < end){
-        string chunk {ciphertext.substr(curr, 32)};
+        string chunk {ciphertext.substr(curr, length)};
         it = find(readed.begin(), readed.end(), chunk);
         if (it != readed.end()){
             score++;
@@ -54,4 +54,16 @@ int repeated_strings(string ciphertext)
     }
 
     return score;
+}
+
+string gen_random_string(int len)
+{
+    string alphanum {"0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
+    string output;
+
+    for (int i = 0; i < len; i++){
+        output += alphanum[rand() % (alphanum.size() -1 )];
+    }
+
+    return output;
 }
