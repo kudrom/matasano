@@ -204,7 +204,7 @@ std::string decrypt_xor_cbc(std::string input, std::string key, std::string iv)
 
     for(int i = 0; i < input.size(); i += key_size){
         std::string ciphertext = input.substr(i, key_size);
-        std::string ciphertext_padded = pkcs7_pad(ciphertext, key_size);
+        std::string ciphertext_padded = pkcs7_pad_block(ciphertext, key_size);
         std::string plaintext = xor_block(ciphertext_padded, key);
         plaintext = xor_block(plaintext, old_ciphertext);
         output += plaintext;

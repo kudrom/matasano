@@ -20,7 +20,7 @@ int hamming_distance(string str1, string str2)
     return score;
 }
 
-string pkcs7_pad(string input, int block_size)
+string pkcs7_pad_block(string input, int block_size)
 {
     int left;
     left = block_size - input.size();
@@ -35,12 +35,27 @@ string pkcs7_pad(string input, int block_size)
     return output;
 }
 
+string pkcs7_pad(string input, int block_size)
+{
+    size_t rest {input.size() % block_size};
+    if (rest != 0){
+        size_t size {input.size() - rest};
+        string input_trimmed {input.substr(0, size)};
+        string last_block {input.substr(size, block_size)};
+        string last_block_padded {pkcs7_pad_block(last_block, block_size)};
+
+        return input_trimmed + last_block_padded;
+    }
+
+    return input;
+}
+
 int repeated_strings(string ciphertext, int length)
 {
     int score {0};
     vector<string> readed;
     vector<string>::iterator it;
-    int end {ciphertext.size()}, curr {0};
+    size_t end {ciphertext.size()}, curr {0};
 
     while (curr < end){
         string chunk {ciphertext.substr(curr, length)};

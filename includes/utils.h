@@ -13,6 +13,8 @@ using std::getline;
 
 int hamming_distance(string str1, string str2);
 
+string pkcs7_pad_block(string input, int block_size);
+
 string pkcs7_pad(string input, int block_size);
 
 int repeated_strings(string ciphertext, int length);

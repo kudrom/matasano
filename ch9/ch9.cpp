@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
     }
     string input {argv[1]};
     int block_size {atoi(argv[2])};
-    string padded {pkcs7_pad(input, block_size)};
+    string padded {pkcs7_pad_block(input, block_size)};
 
     for (char c : padded){
         printf("%02X", c);

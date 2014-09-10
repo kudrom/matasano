@@ -23,8 +23,7 @@ int main(int argc, char *argv[])
         return -1;
     }
     int rounds;
-    sscanf(argv[1], "%d", rounds);
-    cout << rounds << endl;
+    sscanf(argv[1], "%d", &rounds);
     ifstream file {argv[2]};
     string raw_input, output, line;
     byte iv[16];
@@ -36,7 +35,6 @@ int main(int argc, char *argv[])
     if (file.is_open()){
         while(getline(file, line)){
             raw_input += line;
-            raw_input += '\n';
         }
     }
 
@@ -53,27 +51,28 @@ int main(int argc, char *argv[])
         int len_end {rand() % 5};
         len_start += 5;
         len_end += 5;
-        string input;
-        input = gen_random_string(len_start) + raw_input + gen_random_string(len_end);
+        string input {raw_input};
+        input = gen_random_string(len_start) + input + gen_random_string(len_end);
+        input = pkcs7_pad(input, 16);
 
         int ecb_or_cbc {rand() % 2};
         if (ecb_or_cbc == 0){
             cout << "ECB ";
-            ECB_Mode<AES>::Decryption dec;
-            dec.SetKey(buffer_key, 16);
+            ECB_Mode<AES>::Encryption enc;
+            enc.SetKey(buffer_key, 16);
 
             StringSource ss (input, true,
-                    new StreamTransformationFilter(dec,
+                    new StreamTransformationFilter(enc,
                         new StringSink(output)
                     )
             );
         }else{
             cout << "CBC ";
-            CBC_Mode<AES>::Decryption dec;
-            dec.SetKeyWithIV(buffer_key, 16, iv);
+            CBC_Mode<AES>::Encryption enc;
+            enc.SetKeyWithIV(buffer_key, 16, iv);
 
             StringSource ss (input, true,
-                    new StreamTransformationFilter(dec,
+                    new StreamTransformationFilter(enc,
                         new StringSink(output)
                     )
             );
