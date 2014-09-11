@@ -20,3 +20,5 @@ string pkcs7_pad(string input, int block_size);
 int repeated_strings(string ciphertext, int length);
 
 string gen_random_string(int len);
+
+bool oracle_ecb(string input, int block_size);

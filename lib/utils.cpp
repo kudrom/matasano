@@ -65,7 +65,7 @@ int repeated_strings(string ciphertext, int length)
         }else{
             readed.push_back(chunk);
         }
-        curr += 32;
+        curr += length;
     }
 
     return score;
@@ -81,4 +81,77 @@ string gen_random_string(int len)
     }
 
     return output;
+}
+
+bool oracle_ecb(string input, int block_size)
+{
+    constexpr int MIN_BLOCK_SIZE {4};
+    constexpr int MIN_SCORE {0};
+    vector<string> blocks;
+    int score {0};
+
+#ifdef DEBUG
+    printf("\n");
+    for(unsigned char c : input){
+        printf("%02X", c);
+    }
+    printf("\n");
+#endif
+
+    for(int start = 0; start < input.size(); start += block_size)
+        blocks.push_back(input.substr(start, block_size));
+
+    for(int i = 0; i < blocks.size(); i++){
+        for(int ii = i+1; ii < blocks.size(); ii++){
+            int equal_contiguous_bytes {0};
+
+#ifdef DEBUG
+            for(unsigned char c : blocks[i]){
+                printf("%02X", c);
+            }
+            printf(" ^ ");
+            for(unsigned char c : blocks[ii]){
+                printf("%02X", c);
+            }
+            printf("\n");
+#endif
+
+            for(int x = 0; x < block_size; x++){
+                int xored {blocks[i][x] ^ blocks[ii][x]};
+                if (xored == 0){
+                    equal_contiguous_bytes++;
+                }else{
+                    if (equal_contiguous_bytes > MIN_BLOCK_SIZE)
+                        score++;
+                    equal_contiguous_bytes = 0;
+                }
+            }
+
+            // Detect overlapping keywords
+            if (equal_contiguous_bytes > 0){
+                if (equal_contiguous_bytes > MIN_BLOCK_SIZE){
+                    score++;
+                }else{
+                    for(int x = 0; x < MIN_BLOCK_SIZE - 1; x++){
+                        int xored {blocks[i+1][x] ^ blocks[ii+1][x]};
+                        if (xored == 0){
+                            equal_contiguous_bytes++;
+                        }else{
+                            break;
+                        }
+                        if (equal_contiguous_bytes > MIN_BLOCK_SIZE){
+                            score++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+#ifdef DEBUG
+    cout << "SCORE: " << score << endl;
+#endif
+
+    return score > MIN_SCORE;
 }

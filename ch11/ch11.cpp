@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
     int rounds;
     sscanf(argv[1], "%d", &rounds);
     ifstream file {argv[2]};
-    string raw_input, output, line;
+    string raw_input, line;
     byte iv[16];
 
     for(int i = 0; i < 16; i++){
@@ -51,11 +51,15 @@ int main(int argc, char *argv[])
         int len_end {rand() % 5};
         len_start += 5;
         len_end += 5;
+#ifdef DEBUG
+        printf("len_start: %d len_end: %d\n", len_start, len_end);
+#endif
         string input {raw_input};
         input = gen_random_string(len_start) + input + gen_random_string(len_end);
         input = pkcs7_pad(input, 16);
 
         int ecb_or_cbc {rand() % 2};
+        string output;
         if (ecb_or_cbc == 0){
             cout << "ECB ";
             ECB_Mode<AES>::Encryption enc;
@@ -78,12 +82,17 @@ int main(int argc, char *argv[])
             );
         }
 
-        int score = repeated_strings(output, 16);
-        if (score > 2){
+        bool is_ecb {oracle_ecb(output, 16)};
+
+        if (is_ecb){
             cout << "This is in ECB" << endl;
         }else{
             cout << "This is in CBC" << endl;
         }
+
+#ifdef DEBUG
+        printf("\n");
+#endif
 
         rounds--;
     }
